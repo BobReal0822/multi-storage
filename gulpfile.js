@@ -6,10 +6,7 @@ var globby = require('globby');
 
 var exec = require('child_process').exec;
 
-gulp.task('default', function() {
-  // place code for your default task here
-  console.log("gulp default");
-});
+gulp.task('default', ['sync', 'build-watch']);
 
 gulp.task('sync', function(callback) {
     var tsConfig = require('./tsconfig.json');
@@ -25,7 +22,7 @@ gulp.task('build', function (callback) {
     build(callback, false);
 });
 
-gulp.task('build-and-watch', function (callback) {
+gulp.task('build-watch', function (callback) {
     build(callback, true);
 });
 
@@ -41,3 +38,10 @@ function build(callback, watch) {
     cp.stdout.pipe(process.stdout);
     cp.stderr.pipe(process.stdout);
 }
+
+gulp.task('test', function (callback) {
+    
+    var cp = exec('mocha bin/test/test.js', callback);
+    cp.stdout.pipe(process.stdout);
+    cp.stderr.pipe(process.stdout);
+});
