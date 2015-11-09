@@ -1,0 +1,23 @@
+{
+    "version": "1.0.0",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": true,
+        "removeComments": true,
+        "noEmitOnError": true,
+        "noLib": false,
+        "sourceMap": true,
+        "diagnostics": false,
+        "outDir": "./bin"
+    },
+    "filesGlob": [
+        "*/**/*.ts",
+        "!node_modules/**"
+    ],
+    "files": [
+        "lib/client-flag.ts",
+        "test/test.ts"
+    ]
+}

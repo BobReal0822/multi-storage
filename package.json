@@ -2,7 +2,7 @@
   "name": "client-flag",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./bin/client-flag.js",
   "directories": {
     "test": "test"
   },
@@ -23,6 +23,8 @@
     "gulp": "^3.9.0"
   },
   "devDependencies": {
-    "gulp": "^3.9.0"
+    "globby": "^3.0.1",
+    "gulp": "^3.9.0",
+    "mocha": "^2.3.3"
   }
 }
