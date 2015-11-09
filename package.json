@@ -13,13 +13,16 @@
     "type": "git",
     "url": "git+https://github.com/ephoton/client-flag.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "ephoton",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ephoton/client-flag/issues"
   },
   "homepage": "https://github.com/ephoton/client-flag#readme",
   "dependencies": {
+    "gulp": "^3.9.0"
+  },
+  "devDependencies": {
     "gulp": "^3.9.0"
   }
 }
