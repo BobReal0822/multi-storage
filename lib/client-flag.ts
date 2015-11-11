@@ -77,7 +77,21 @@
         return name ? root.localStorage.getItem(name) : '';
     }
     
-    var 
+    var _getUserData = function(name: string): string {
+        
+    }
+    
+    var _setUserData = function(name: string, value: string): boolean {
+        
+    }
+    
+    var _getFlashCookie = function(name: string): string {
+        
+    }
+    
+    var _setFlashCookie = function(name: string, value: string): string {
+        
+    }
     
 }());
 
