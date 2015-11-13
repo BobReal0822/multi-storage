@@ -63,11 +63,11 @@
             }
         }
         
-        setOne(name: string, value: string) {
+        setItem(name: string, value: string) {
             if(!name || !value) {
                 return false;
             }
-            this._broadcast({name, value}, 'setOne');
+            this._broadcast({name, value}, 'setItem');
         }
         
         set(data: {[key: string] : any}) {
@@ -76,20 +76,24 @@
                 this._broadcast(data, 'set');
             }
             else if(dataLength > 1) {
-                this._broadcast(data, 'setOne')
+                this._broadcast(data, 'setItem');
             }
             return false;
+        }
+        
+        getItem() {
+            
         }
         
         get() {
             
         }
         
-        getAll() {
+        clear() {
             
         }
         
-        clear() {
+        removeItem(name: string): void {
             
         }
         
@@ -123,6 +127,10 @@
         
         get(name: string): string {
             return name ? root.localStorage.getItem(name) : '';
+        }
+        
+        clear(): void {
+            root.localStorage.clear();
         }
         
     }

@@ -3,18 +3,58 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Example for client-flag.js</title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./index.css">
 </head>
-<body>
+<body class="container-fluid col-md-8 col-md-offset-2">
 	<div class="header">
-		client flag demo
+		<h2 class="text-center">client flag demo</h2>
 	</div>
 
 	<div class="content">
-		<button id="set-flag">设置flag</button>
-		<button id="get-flag">获取flag</button>
+        <div class="nav">
+            <button id="set" class="btn btn-primary">set()</button>
+            <button id="setItem" class="btn btn-primary">setItem()</button>
+            <button id="get" class="btn btn-default">get()</button>
+            <button id="getItem" class="btn btn-default">getItem()</button>
+            <button id="clear" class="btn btn-danger">clear()</button>
+            <button id="remove" class="btn btn-danger">remove()</button>
+        </div>
 
-		<div class="show-flag">
+
+		<div class="data">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="cookie" class="col-sm-2 control-label">Cookie:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="cookie" disabled placeholder="null">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="localStorage" class="col-sm-2 control-label">LocalStorage:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="localStorage" disabled placeholder="null">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="userData" class="col-sm-2 control-label">UserData:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="userData" disabled placeholder="null">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="indexedDB" class="col-sm-2 control-label">IndexedDB:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="indexedDB" disabled placeholder="null">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="flash" class="col-sm-2 control-label">Flash:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="flash" disabled placeholder="null">
+                    </div>
+                </div>
+            </form>
 		</div>
 
 	</div>
@@ -22,7 +62,26 @@
 	<div class="footer">
 		
 	</div>
+    
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Set Data:</h4>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" placeholder="null">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 	<script src="http://cdn.bootcss.com/jquery/3.0.0-alpha1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script src="./../bin/lib/client-flag.js"></script>
 	<script src="./index.js"></script>
 </body>

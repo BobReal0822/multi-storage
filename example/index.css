@@ -1,13 +1,27 @@
 html {
-
+    padding: 0;
+    margin: 0;
 }
 
 .header {
-
+    margin-top: 5em;
 }
 
 .content {
+    margin: 3.5em 0;
+}
 
+.content .nav button {
+    margin: 1em 2em;
+    float: left;
+}
+
+.content .data {
+    margin: 3.5em 0;
+}
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    background-color: #fff !important;
 }
 
 .footer {
