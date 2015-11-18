@@ -33,7 +33,7 @@
         swfPath: string;
     }
     
-    class clientFlag {
+    class ClientFlag {
 
         _config = {
             flagName: 'flagId',
@@ -57,49 +57,49 @@
         
         _setting: clientFlagInfo;
         
-        constructor(settings: clientFlagInfo) {
+        constructor (settings: clientFlagInfo) {
             for(let key in this._defaultSettings) {
                 this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
             }
         }
         
-        setItem(name: string, value: string) {
+        setItem (name: string, value: string) {
             if(!name || !value) {
                 return false;
             }
             this._broadcast({name, value}, 'setItem');
         }
         
-        set(data: {[key: string] : any}) {
+        set (data: {[key: string] : any}) {
             let dataLength = Object.keys(data).length;
-            if(dataLength == 1) {
+            if (dataLength == 1) {
                 this._broadcast(data, 'set');
             }
-            else if(dataLength > 1) {
+            else if (dataLength > 1) {
                 this._broadcast(data, 'setItem');
             }
             return false;
         }
         
-        getItem() {
+        getItem () {
             
         }
         
-        get() {
+        get () {
             
         }
         
-        clear() {
+        clear () {
             
         }
         
-        removeItem(name: string): void {
+        removeItem (name: string): void {
             
         }
         
-        _broadcast(data: {[key: string] : any}, func: string) {
-            for(let key in this._setting) {
-                if(this._setting[key]) {
+        _broadcast (data: {[key: string] : any}, func: string) {
+            for (let key in this._setting) {
+                if (this._setting[key]) {
                     let storageClass = key[0].toUpperCase() + key.substring(1, key.length);
                     storageClass.func.apply(this, data);
                 }
@@ -111,11 +111,11 @@
     // class localStorage
     class LocalStorage {
         
-        constructor(name: string, value: string) {
+        constructor (name: string, value: string) {
             this.set(name, value);
         }
         
-        set(name: string, value: string): boolean {
+        set (name: string, value: string): boolean {
             if(!name || !value) {
                 return false;
             }
@@ -125,11 +125,11 @@
             }
         }
         
-        get(name: string): string {
+        get (name: string): string {
             return name ? root.localStorage.getItem(name) : '';
         }
         
-        clear(): void {
+        clear (): void {
             root.localStorage.clear();
         }
         
@@ -137,11 +137,11 @@
     
     class Cookie {
         
-        constructor(name: string, value: string, expires?: Date) {
+        constructor (name: string, value: string, expires?: Date) {
             this.set(name, value);
         }
         
-        set(name: string, value: string, expires?: Date): boolean {
+        set (name: string, value: string, expires?: Date): boolean {
             if(!name || !value) {
                 return false;
             }
@@ -151,16 +151,16 @@
             }
         }
         
-        get(name: string): string {
+        get (name: string): string {
             var 
                 cookie = root.document.cookie,
                 value = '',
                 nameIndex: number,
                 valueIndex: number;
                 
-            if(cookie.length > 0) {
+            if (cookie.length > 0) {
                 nameIndex = cookie.indexOf(name + '=');
-                if(nameIndex > -1) {
+                if (nameIndex > -1) {
                     valueIndex = cookie.indexOf(';', nameIndex);
                     value = valueIndex > -1 ? cookie.substring(nameIndex + name.length + 1, valueIndex) : '';
                 }
@@ -173,12 +173,12 @@
         
         _setting: UserDataInfo;
         
-        constructor(setting: UserDataInfo) {
+        constructor (setting: UserDataInfo) {
             this._setting = setting;
         }
         
-        set(name: string, value: string): boolean {
-            if(name && value) {
+        set (name: string, value: string): boolean {
+            if (name && value) {
                 try {
                     var element = root.document.createElement(this._setting.elementName)
                     element.style.visibility = "hidden";
@@ -190,7 +190,7 @@
                     element.save(name);
                     return true;
                 }
-                catch(error) {
+                catch (error) {
                     console.log('setUserData error', error);
                     return false;
                 }
@@ -198,7 +198,7 @@
             return false;
         }
         
-        get(name: string): string {
+        get (name: string): string {
             try {
                 var element = root.document.getElementsByClassName(this._setting.className);
                 element.load(name);
@@ -216,15 +216,15 @@
         
         _settings: IndexedDBInfo;
         
-        constructor(setting: IndexedDBInfo) {
+        constructor (setting: IndexedDBInfo) {
             this._settings = setting;
         }
         
-        set(name:string, value: string) {
+        set (name:string, value: string) {
             
         }
         
-        get(name: string) {
+        get (name: string) {
             var localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
             var dbRequest = localIndexedDB.open(this._settings.dbName);
             dbRequest.onerror = function(event: any) {
@@ -257,17 +257,18 @@
         
         _setting: FlashCookieInfo;
         
-        constructor(setting: FlashCookieInfo) {
+        constructor (setting: FlashCookieInfo) {
             this._setting = setting;
         }
         
-        set() {
+        set () {
             
         }
         
-        get() {
+        get () {
             
         }
     }
     
+    return ClientFlag;
 }());

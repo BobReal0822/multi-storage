@@ -176,5 +176,6 @@
         };
         return Flash;
     })();
+    return clientFlag;
 }());
 //# sourceMappingURL=client-flag.js.map

@@ -3,17 +3,17 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Example for client-flag.js</title>
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="./index.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./index.css">
 </head>
-<body class="container-fluid col-md-8 col-md-offset-2">
+<body class="col-md-8 col-md-push-2">
 	<div class="header">
 		<h2 class="text-center">client flag demo</h2>
 	</div>
 
 	<div class="content">
         <div class="nav">
-            <button id="set" class="btn btn-primary">set()</button>
+            <button id="set" class="btn btn-primary" data-toggle="modal" data-target="#data-modal">set()</button>
             <button id="setItem" class="btn btn-primary">setItem()</button>
             <button id="get" class="btn btn-default">get()</button>
             <button id="getItem" class="btn btn-default">getItem()</button>
@@ -24,6 +24,12 @@
 
 		<div class="data">
             <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="set-data" class="col-sm-2 control-label">Set Data:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="set-data" placeholder="please input the keys and values" value="{'a': '1', 'b': '2'}">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="cookie" class="col-sm-2 control-label">Cookie:</label>
                     <div class="col-sm-10">
@@ -59,30 +65,14 @@
 
 	</div>
 
-	<div class="footer">
-		
+	<div class="footer col-md-8">
+        
+
 	</div>
     
-    <div class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Set Data:</h4>
-                </div>
-                <div class="modal-body">
-                    <input class="form-control" placeholder="null">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-	<script src="http://cdn.bootcss.com/jquery/3.0.0-alpha1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/jquery/3.0.0-alpha1/jquery.min.js"></script>
     <script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-	<script src="./../bin/lib/client-flag.js"></script>
-	<script src="./index.js"></script>
+    <script src="index.js"></script>
+    <script src="../bin/lib/client-flag.js"></script>
 </body>
 </html>
