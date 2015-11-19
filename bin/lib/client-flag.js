@@ -7,8 +7,8 @@
     var root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
-    var clientFlag = (function () {
-        function clientFlag(settings) {
+    var ClientFlag = (function () {
+        function ClientFlag(settings) {
             this._config = {
                 flagName: 'flagId',
                 userData: {
@@ -31,29 +31,31 @@
                 this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
             }
         }
-        clientFlag.prototype.setOne = function (name, value) {
+        ClientFlag.prototype.setItem = function (name, value) {
             if (!name || !value) {
                 return false;
             }
-            this._broadcast({ name: name, value: value }, 'setOne');
+            this._broadcast({ name: name, value: value }, 'setItem');
         };
-        clientFlag.prototype.set = function (data) {
+        ClientFlag.prototype.set = function (data) {
             var dataLength = Object.keys(data).length;
             if (dataLength == 1) {
                 this._broadcast(data, 'set');
             }
             else if (dataLength > 1) {
-                this._broadcast(data, 'setOne');
+                this._broadcast(data, 'setItem');
             }
             return false;
         };
-        clientFlag.prototype.get = function () {
+        ClientFlag.prototype.getItem = function () {
         };
-        clientFlag.prototype.getAll = function () {
+        ClientFlag.prototype.get = function () {
         };
-        clientFlag.prototype.clear = function () {
+        ClientFlag.prototype.clear = function () {
         };
-        clientFlag.prototype._broadcast = function (data, func) {
+        ClientFlag.prototype.removeItem = function (name) {
+        };
+        ClientFlag.prototype._broadcast = function (data, func) {
             for (var key in this._setting) {
                 if (this._setting[key]) {
                     var storageClass = key[0].toUpperCase() + key.substring(1, key.length);
@@ -61,7 +63,7 @@
                 }
             }
         };
-        return clientFlag;
+        return ClientFlag;
     })();
     var LocalStorage = (function () {
         function LocalStorage(name, value) {
@@ -78,6 +80,9 @@
         };
         LocalStorage.prototype.get = function (name) {
             return name ? root.localStorage.getItem(name) : '';
+        };
+        LocalStorage.prototype.clear = function () {
+            root.localStorage.clear();
         };
         return LocalStorage;
     })();
@@ -176,6 +181,5 @@
         };
         return Flash;
     })();
-    return clientFlag;
 }());
 //# sourceMappingURL=client-flag.js.map
