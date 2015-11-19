@@ -181,5 +181,6 @@
         };
         return Flash;
     })();
+    return ClientFlag;
 }());
-//# sourceMappingURL=client-flag.js.map
+//# sourceMappingURL=brower-storage.js.map
