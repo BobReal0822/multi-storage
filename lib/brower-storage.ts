@@ -182,30 +182,41 @@
     
     class Cookie {
         
+        private _data: string[] = [];
+        
         constructor (name?: string, value?: string, expires?: Date) {
-            name && value && this.set(name, value);
+            name && value && this.setItem(name, value);
         }
         
-        set (name: string, value: string, expires?: Date): boolean {
+        setItem (name: string, value: string, expires?: Date): boolean {
             console.log('in Cookie set:', name , value);
             if(!name || !value) {
                 return false;
             }
             else {
-                root.document.cookie = name + '=' + value + (expires ? 'expires=' + expires : null);
+                root.document.cookie = name + '=' + value + (expires ? 'expires=' + expires : '');
+                this._data.push(name);
                 return true;
             }
         }
         
+        set (data: {[key: string] : any}) {
+            let keys = Object.keys(data),
+                dataLength = keys.length;
+            keys.forEach(key => {
+                this.setItem(key, data[key]);
+            });
+            return false;
+        }
+        
         get (name: string): string {
-            console.log('in Cookie get:', name);
             var 
                 cookie = root.document.cookie,
                 value = '',
                 nameIndex: number,
                 valueIndex: number;
                 
-            if (cookie.length > 0) {
+            if (cookie.length > 0 && this._data.indexOf(name) >= 0) {
                 nameIndex = cookie.indexOf(name + '=');
                 if (nameIndex > -1) {
                     valueIndex = cookie.indexOf(';', nameIndex);
@@ -215,11 +226,19 @@
             return value;
         }
         
-        clear (): void {
-            root.localStorage.clear();
+        getAll (): {} | {[key: string]: string} {
+            let result: {[key: string] : any} = {};
+            this._data.forEach(dataItem => {
+                result[dataItem] = this.get(dataItem);
+            })
+            return result;
         }
         
         removeItem (name: string): void {
+            
+        }
+        
+        clear (): void {
             
         }
     }
@@ -356,4 +375,8 @@
     }
     
     root.BrowerStorage = BrowerStorage;
+    root.Cookie = Cookie;
+    root.LocalStorage = LocalStorage;
+    root.Flash = Flash;
+    root.IndexedDB = IndexedDB;
 }());

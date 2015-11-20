@@ -124,22 +124,31 @@
     })();
     var Cookie = (function () {
         function Cookie(name, value, expires) {
-            name && value && this.set(name, value);
+            this._data = [];
+            name && value && this.setItem(name, value);
         }
-        Cookie.prototype.set = function (name, value, expires) {
+        Cookie.prototype.setItem = function (name, value, expires) {
             console.log('in Cookie set:', name, value);
             if (!name || !value) {
                 return false;
             }
             else {
-                root.document.cookie = name + '=' + value + (expires ? 'expires=' + expires : null);
+                root.document.cookie = name + '=' + value + (expires ? 'expires=' + expires : '');
+                this._data.push(name);
                 return true;
             }
         };
+        Cookie.prototype.set = function (data) {
+            var _this = this;
+            var keys = Object.keys(data), dataLength = keys.length;
+            keys.forEach(function (key) {
+                _this.setItem(key, data[key]);
+            });
+            return false;
+        };
         Cookie.prototype.get = function (name) {
-            console.log('in Cookie get:', name);
             var cookie = root.document.cookie, value = '', nameIndex, valueIndex;
-            if (cookie.length > 0) {
+            if (cookie.length > 0 && this._data.indexOf(name) >= 0) {
                 nameIndex = cookie.indexOf(name + '=');
                 if (nameIndex > -1) {
                     valueIndex = cookie.indexOf(';', nameIndex);
@@ -148,10 +157,17 @@
             }
             return value;
         };
-        Cookie.prototype.clear = function () {
-            root.localStorage.clear();
+        Cookie.prototype.getAll = function () {
+            var _this = this;
+            var result = {};
+            this._data.forEach(function (dataItem) {
+                result[dataItem] = _this.get(dataItem);
+            });
+            return result;
         };
         Cookie.prototype.removeItem = function (name) {
+        };
+        Cookie.prototype.clear = function () {
         };
         return Cookie;
     })();
@@ -252,5 +268,9 @@
         return Flash;
     })();
     root.BrowerStorage = BrowerStorage;
+    root.Cookie = Cookie;
+    root.LocalStorage = LocalStorage;
+    root.Flash = Flash;
+    root.IndexedDB = IndexedDB;
 }());
 //# sourceMappingURL=brower-storage.js.map
