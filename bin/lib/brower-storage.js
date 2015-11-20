@@ -27,25 +27,25 @@
                 flash: true,
                 indexedDB: true
             };
-            settings ? function () {
+            this._setting = this._defaultSettings;
+            if (settings) {
                 for (var key in this._defaultSettings) {
-                    this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
+                    settings[key] === undefined || typeof settings[key] === 'undefined' ? null : this._setting[key] = settings[key];
                 }
-            }() : this._setting = this._defaultSettings;
+            }
         }
         BrowerStorage.prototype.setItem = function (name, value) {
+            console.log('in setItem:', name, value);
             if (!name || !value) {
                 return false;
             }
-            this._broadcast({ name: name, value: value }, 'setItem');
+            this._broadcast({ name: name, value: value }, function setItem() { console.log('test'); });
         };
         BrowerStorage.prototype.set = function (data) {
             var dataLength = Object.keys(data).length;
             if (dataLength == 1) {
-                this._broadcast(data, 'set');
             }
             else if (dataLength > 1) {
-                this._broadcast(data, 'setItem');
             }
             return false;
         };
@@ -58,10 +58,38 @@
         BrowerStorage.prototype.removeItem = function (name) {
         };
         BrowerStorage.prototype._broadcast = function (data, func) {
+            console.log('in _broadcast:', data, func);
+            console.log('this setting:', this._setting);
             for (var key in this._setting) {
+                var _class = void 0;
                 if (this._setting[key]) {
-                    var storageClass = key[0].toUpperCase() + key.substring(1, key.length);
-                    storageClass.func.apply(this, data);
+                    console.log('func', func);
+                    console.log('Class', key);
+                    switch (key) {
+                        case 'cookie':
+                            _class = new Cookie();
+                            break;
+                        case 'localStorage':
+                            _class = new LocalStorage();
+                            break;
+                        case 'userData':
+                            _class = new UserData();
+                            break;
+                        case 'flash':
+                            _class = new Flash();
+                            break;
+                        case 'indexedDB':
+                            _class = new IndexedDB();
+                            break;
+                        default:
+                            _class = new Cookie();
+                    }
+                    for (var key_1 in _class) {
+                        console.log('key in cookie:', key_1);
+                        if (key_1 == func) {
+                        }
+                    }
+                    console.log('has prop:', func.apply(_class, data));
                 }
             }
         };
@@ -69,9 +97,10 @@
     })();
     var LocalStorage = (function () {
         function LocalStorage(name, value) {
-            this.set(name, value);
+            name && value && this.set(name, value);
         }
         LocalStorage.prototype.set = function (name, value) {
+            console.log('in LocalStorage set:', name, value);
             if (!name || !value) {
                 return false;
             }
@@ -81,18 +110,24 @@
             }
         };
         LocalStorage.prototype.get = function (name) {
+            console.log('in LocalStorage get:', name);
             return name ? root.localStorage.getItem(name) : '';
         };
         LocalStorage.prototype.clear = function () {
+            console.log('in LocalStorage clear:');
             root.localStorage.clear();
+        };
+        LocalStorage.prototype.removeItem = function (name) {
+            console.log('in LocalStorage removeItem:', name);
         };
         return LocalStorage;
     })();
     var Cookie = (function () {
         function Cookie(name, value, expires) {
-            this.set(name, value);
+            name && value && this.set(name, value);
         }
         Cookie.prototype.set = function (name, value, expires) {
+            console.log('in Cookie set:', name, value);
             if (!name || !value) {
                 return false;
             }
@@ -102,6 +137,7 @@
             }
         };
         Cookie.prototype.get = function (name) {
+            console.log('in Cookie get:', name);
             var cookie = root.document.cookie, value = '', nameIndex, valueIndex;
             if (cookie.length > 0) {
                 nameIndex = cookie.indexOf(name + '=');
@@ -112,13 +148,19 @@
             }
             return value;
         };
+        Cookie.prototype.clear = function () {
+            root.localStorage.clear();
+        };
+        Cookie.prototype.removeItem = function (name) {
+        };
         return Cookie;
     })();
     var UserData = (function () {
         function UserData(setting) {
-            this._setting = setting;
+            setting ? this._setting = setting : null;
         }
         UserData.prototype.set = function (name, value) {
+            console.log('in UserData set:', name, value);
             if (name && value) {
                 try {
                     var element = root.document.createElement(this._setting.elementName);
@@ -138,6 +180,7 @@
             return false;
         };
         UserData.prototype.get = function (name) {
+            console.log('in UserData get:', name);
             try {
                 var element = root.document.getElementsByClassName(this._setting.className);
                 element.load(name);
@@ -148,15 +191,24 @@
                 return '';
             }
         };
+        UserData.prototype.clear = function () {
+            console.log('in userData clear:');
+            root.localStorage.clear();
+        };
+        UserData.prototype.removeItem = function (name) {
+            console.log('in UserData removeItem:');
+        };
         return UserData;
     })();
     var IndexedDB = (function () {
         function IndexedDB(setting) {
-            this._settings = setting;
+            setting ? this._settings = setting : null;
         }
         IndexedDB.prototype.set = function (name, value) {
+            console.log('in IndexedDB set:', name, value);
         };
         IndexedDB.prototype.get = function (name) {
+            console.log('in IndexedDB get:', name);
             var localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
             var dbRequest = localIndexedDB.open(this._settings.dbName);
             dbRequest.onerror = function (event) {
@@ -170,16 +222,32 @@
                 });
             };
         };
+        IndexedDB.prototype.clear = function () {
+            console.log('in IndexedDB clear:');
+            root.localStorage.clear();
+        };
+        IndexedDB.prototype.removeItem = function (name) {
+            console.log('in IndexedDB removeItem:');
+        };
         return IndexedDB;
     })();
     ;
     var Flash = (function () {
         function Flash(setting) {
-            this._setting = setting;
+            setting ? this._setting = setting : null;
         }
-        Flash.prototype.set = function () {
+        Flash.prototype.set = function (name, value) {
+            console.log('in Flash set:', name, value);
         };
-        Flash.prototype.get = function () {
+        Flash.prototype.get = function (name) {
+            console.log('in Flash get:', name);
+        };
+        Flash.prototype.clear = function () {
+            console.log('in Flash clear:');
+            root.localStorage.clear();
+        };
+        Flash.prototype.removeItem = function (name) {
+            console.log('in Flash removeItem:');
         };
         return Flash;
     })();

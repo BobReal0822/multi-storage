@@ -14,14 +14,34 @@
 
     $set.click(function () {
         var data = $setData.val();
+//        data = JSON.parse(data)
         console.log('set-data', data);
         
         if (!data || !data.length) {
             return;
         }
         
-        var flag = new BrowerStorage();
-        console.log('client flag', flag);
+        var storage = new BrowerStorage({
+            cookie: true,
+            localStorage: false,
+            userData: false,
+            flash: false,
+            indexedDB: false
+        });
+        console.log('storage:', storage);
+        storage.set(data);
     });
+    
+
+    // test cookie
+    var storage = new BrowerStorage({
+        cookie: true,
+        localStorage: false,
+        userData: false,
+        flash: false,
+        indexedDB: false
+    });
+    console.log('storage:', storage);
+    storage.setItem('a', 1);
     
 }());

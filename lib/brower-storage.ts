@@ -24,6 +24,11 @@
         swfPath: string;
     }
     
+    interface JsonInfo {
+        name: string;
+        value: string;
+    }
+    
     interface BrowerStorageInfo {
         [key: string]: boolean;
         cookie: boolean;
@@ -35,7 +40,7 @@
 
     class BrowerStorage {
 
-        _config = {
+        private _config = {
             flagName: 'flagId',
             userData: {
                 type: 'div',
@@ -47,7 +52,7 @@
             }
         }
         
-       _defaultSettings = <BrowerStorageInfo>{
+       private _defaultSettings = <BrowerStorageInfo>{
             cookie: true,
             localStorage: true,
             userData: true,
@@ -55,28 +60,32 @@
             indexedDB: true
         }
         
-        _setting: BrowerStorageInfo;
+        private _setting: BrowerStorageInfo;
         
         constructor (settings?: BrowerStorageInfo) {
-            settings ? function(){for(let key in this._defaultSettings) {
-                this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
-            }}(): this._setting = this._defaultSettings;
+            this._setting = this._defaultSettings;
+            if(settings) {
+                for(let key in this._defaultSettings) {
+                    settings[key] === undefined || typeof settings[key] === 'undefined' ? null : this._setting[key] = settings[key];
+                }
+            }
         }
         
         setItem (name: string, value: string) {
+            console.log('in setItem:', name, value);
             if(!name || !value) {
                 return false;
             }
-            this._broadcast({name, value}, 'setItem');
+            this._broadcast({name, value}, function setItem(): any{console.log('test')});
         }
         
         set (data: {[key: string] : any}) {
             let dataLength = Object.keys(data).length;
             if (dataLength == 1) {
-                this._broadcast(data, 'set');
+                // this._broadcast(data, 'set');
             }
             else if (dataLength > 1) {
-                this._broadcast(data, 'setItem');
+                // this._broadcast(data, 'setItem');
             }
             return false;
         }
@@ -97,11 +106,41 @@
             
         }
         
-        _broadcast (data: {[key: string] : any}, func: string) {
+        private _broadcast (data: {[key: string] : any}, func: () => {}) {
+            console.log('in _broadcast:', data, func);
+            console.log('this setting:', this._setting);
             for (let key in this._setting) {
+                let _class: Cookie | LocalStorage | Flash | UserData | IndexedDB;
                 if (this._setting[key]) {
-                    let storageClass = key[0].toUpperCase() + key.substring(1, key.length);
-                    storageClass.func.apply(this, data);
+                    console.log('func', func);
+                    console.log('Class', key);
+                    switch(key) {
+                        case 'cookie':
+                            _class = new Cookie();
+                            break;
+                        case 'localStorage':
+                            _class = new LocalStorage();
+                            break;
+                        case 'userData':
+                            _class = new UserData();
+                            break;
+                        case 'flash':
+                            _class = new Flash();
+                            break;
+                        case 'indexedDB':
+                            _class = new IndexedDB();
+                            break;
+                        default:
+                            _class = new Cookie();
+                    }
+                    // _class.func.apply(this, data);
+                    for(let key in _class) {
+                        console.log('key in cookie:', key);
+                        if(key == func) {
+                            // _class
+                        }
+                    }
+                    console.log('has prop:', func.apply(_class, data))
                 }
             }
         }
@@ -111,11 +150,12 @@
     // class localStorage
     class LocalStorage {
         
-        constructor (name: string, value: string) {
-            this.set(name, value);
+        constructor (name?: string, value?: string) {
+            name && value && this.set(name, value);
         }
         
         set (name: string, value: string): boolean {
+            console.log('in LocalStorage set:', name , value);
             if(!name || !value) {
                 return false;
             }
@@ -126,22 +166,28 @@
         }
         
         get (name: string): string {
+            console.log('in LocalStorage get:', name);
             return name ? root.localStorage.getItem(name) : '';
         }
         
         clear (): void {
+            console.log('in LocalStorage clear:');
             root.localStorage.clear();
         }
         
+        removeItem (name: string): void {
+            console.log('in LocalStorage removeItem:', name);
+        }
     }
     
     class Cookie {
         
-        constructor (name: string, value: string, expires?: Date) {
-            this.set(name, value);
+        constructor (name?: string, value?: string, expires?: Date) {
+            name && value && this.set(name, value);
         }
         
         set (name: string, value: string, expires?: Date): boolean {
+            console.log('in Cookie set:', name , value);
             if(!name || !value) {
                 return false;
             }
@@ -152,6 +198,7 @@
         }
         
         get (name: string): string {
+            console.log('in Cookie get:', name);
             var 
                 cookie = root.document.cookie,
                 value = '',
@@ -167,17 +214,26 @@
             }
             return value;
         }
+        
+        clear (): void {
+            root.localStorage.clear();
+        }
+        
+        removeItem (name: string): void {
+            
+        }
     }
     
     class UserData {
         
         _setting: UserDataInfo;
         
-        constructor (setting: UserDataInfo) {
-            this._setting = setting;
+        constructor (setting?: UserDataInfo) {
+            setting ? this._setting = setting : null;
         }
         
         set (name: string, value: string): boolean {
+            console.log('in UserData set:', name , value);
             if (name && value) {
                 try {
                     var element = root.document.createElement(this._setting.elementName)
@@ -199,6 +255,7 @@
         }
         
         get (name: string): string {
+            console.log('in UserData get:', name);
             try {
                 var element = root.document.getElementsByClassName(this._setting.className);
                 element.load(name);
@@ -210,21 +267,32 @@
             }
         }
         
+        clear (): void {
+            console.log('in userData clear:');
+            root.localStorage.clear();
+        }
+        
+        removeItem (name: string): void {
+            console.log('in UserData removeItem:');
+            
+        }
     }
     
     class IndexedDB {
         
         _settings: IndexedDBInfo;
         
-        constructor (setting: IndexedDBInfo) {
-            this._settings = setting;
+        constructor (setting?: IndexedDBInfo) {
+            setting ? this._settings = setting : null;
         }
         
         set (name:string, value: string) {
+            console.log('in IndexedDB set:', name , value);
             
         }
         
         get (name: string) {
+            console.log('in IndexedDB get:', name );
             var localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
             var dbRequest = localIndexedDB.open(this._settings.dbName);
             dbRequest.onerror = function(event: any) {
@@ -251,22 +319,39 @@
             // }
         }
         
+        clear (): void {
+            console.log('in IndexedDB clear:');
+            root.localStorage.clear();
+        }
+        
+        removeItem (name: string): void {
+            console.log('in IndexedDB removeItem:');
+        }
     };
     
     class Flash {
         
         _setting: FlashCookieInfo;
         
-        constructor (setting: FlashCookieInfo) {
-            this._setting = setting;
+        constructor (setting?: FlashCookieInfo) {
+            setting ? this._setting = setting : null;
         }
         
-        set () {
-            
+        set (name: string, value: string) {
+            console.log('in Flash set:', name , value);
         }
         
-        get () {
-            
+        get (name: string) {
+            console.log('in Flash get:', name);
+        }
+        
+        clear (): void {
+            console.log('in Flash clear:');
+            root.localStorage.clear();
+        }
+        
+        removeItem (name: string): void {
+            console.log('in Flash removeItem:');
         }
     }
     
