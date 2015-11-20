@@ -95,40 +95,12 @@
         };
         return BrowerStorage;
     })();
-    var LocalStorage = (function () {
-        function LocalStorage(name, value) {
-            name && value && this.set(name, value);
-        }
-        LocalStorage.prototype.set = function (name, value) {
-            console.log('in LocalStorage set:', name, value);
-            if (!name || !value) {
-                return false;
-            }
-            else {
-                root.localStorage.setItem(name, value);
-                return true;
-            }
-        };
-        LocalStorage.prototype.get = function (name) {
-            console.log('in LocalStorage get:', name);
-            return name ? root.localStorage.getItem(name) : '';
-        };
-        LocalStorage.prototype.clear = function () {
-            console.log('in LocalStorage clear:');
-            root.localStorage.clear();
-        };
-        LocalStorage.prototype.removeItem = function (name) {
-            console.log('in LocalStorage removeItem:', name);
-        };
-        return LocalStorage;
-    })();
     var Cookie = (function () {
         function Cookie(name, value, expires) {
             this._data = [];
             name && value && this.setItem(name, value);
         }
         Cookie.prototype.setItem = function (name, value, expires) {
-            console.log('in Cookie set:', name, value);
             if (!name || !value) {
                 return false;
             }
@@ -140,11 +112,11 @@
         };
         Cookie.prototype.set = function (data) {
             var _this = this;
-            var keys = Object.keys(data), dataLength = keys.length;
+            var setStatus = true, keys = Object.keys(data), dataLength = keys.length;
             keys.forEach(function (key) {
-                _this.setItem(key, data[key]);
+                !_this.setItem(key, data[key]) ? setStatus = false : null;
             });
-            return false;
+            return setStatus;
         };
         Cookie.prototype.get = function (name) {
             var cookie = root.document.cookie, value = '', nameIndex, valueIndex;
@@ -166,10 +138,73 @@
             return result;
         };
         Cookie.prototype.removeItem = function (name) {
+            if (name && this._data.indexOf(name) >= 0) {
+                var localCookie = name + '=' + this.get(name) + '; expires=' + new Date(0);
+                root.document.cookie = localCookie;
+                return true;
+            }
+            return false;
         };
         Cookie.prototype.clear = function () {
+            var _this = this;
+            var clearStatus = true;
+            this._data.forEach(function (dataItem) {
+                !_this.removeItem(dataItem) ? clearStatus = false : null;
+            });
+            return clearStatus;
         };
         return Cookie;
+    })();
+    var LocalStorage = (function () {
+        function LocalStorage(name, value) {
+            this._data = [];
+            name && value && this.setItem(name, value);
+        }
+        LocalStorage.prototype.setItem = function (name, value, expires) {
+            if (!name || !value) {
+                return false;
+            }
+            else {
+                root.localStorage.setItem(name, value);
+                this._data.push(name);
+                return true;
+            }
+        };
+        LocalStorage.prototype.set = function (data) {
+            var _this = this;
+            var setStatus = true, keys = Object.keys(data), dataLength = keys.length;
+            keys.forEach(function (key) {
+                !_this.setItem(key, data[key]) ? setStatus = false : null;
+            });
+            return setStatus;
+        };
+        LocalStorage.prototype.get = function (name) {
+            return name ? root.localStorage.getItem(name) : '';
+        };
+        LocalStorage.prototype.getAll = function () {
+            var _this = this;
+            var result = {};
+            this._data.forEach(function (dataItem) {
+                result[dataItem] = _this.get(dataItem);
+            });
+            return result;
+        };
+        LocalStorage.prototype.removeItem = function (name) {
+            if (name && this._data.indexOf(name) >= 0) {
+                root.localStorage.removeItem(name);
+                return true;
+            }
+            return false;
+        };
+        LocalStorage.prototype.clear = function () {
+            var _this = this;
+            var clearStatus = true;
+            this._data.forEach(function (dataItem) {
+                !_this.removeItem(dataItem) ? clearStatus = false : null;
+            });
+            return clearStatus;
+        };
+        return LocalStorage;
     })();
     var UserData = (function () {
         function UserData(setting) {

@@ -147,39 +147,6 @@
         
     }
 
-    // class localStorage
-    class LocalStorage {
-        
-        constructor (name?: string, value?: string) {
-            name && value && this.set(name, value);
-        }
-        
-        set (name: string, value: string): boolean {
-            console.log('in LocalStorage set:', name , value);
-            if(!name || !value) {
-                return false;
-            }
-            else {
-                root.localStorage.setItem(name,  value);
-                return true;
-            }
-        }
-        
-        get (name: string): string {
-            console.log('in LocalStorage get:', name);
-            return name ? root.localStorage.getItem(name) : '';
-        }
-        
-        clear (): void {
-            console.log('in LocalStorage clear:');
-            root.localStorage.clear();
-        }
-        
-        removeItem (name: string): void {
-            console.log('in LocalStorage removeItem:', name);
-        }
-    }
-    
     class Cookie {
         
         private _data: string[] = [];
@@ -189,7 +156,6 @@
         }
         
         setItem (name: string, value: string, expires?: Date): boolean {
-            console.log('in Cookie set:', name , value);
             if(!name || !value) {
                 return false;
             }
@@ -200,13 +166,14 @@
             }
         }
         
-        set (data: {[key: string] : any}) {
-            let keys = Object.keys(data),
+        set (data: {[key: string] : any}): boolean {
+            let setStatus = true,
+                keys = Object.keys(data),
                 dataLength = keys.length;
             keys.forEach(key => {
-                this.setItem(key, data[key]);
+                !this.setItem(key, data[key]) ? setStatus = false : null;
             });
-            return false;
+            return setStatus;
         }
         
         get (name: string): string {
@@ -234,12 +201,79 @@
             return result;
         }
         
-        removeItem (name: string): void {
-            
+        removeItem (name: string): boolean {
+            if (name && this._data.indexOf(name) >= 0) {
+                let localCookie = name + '=' + this.get(name) + '; expires=' + new Date(0);
+                root.document.cookie = localCookie;
+                return true;
+            }
+            return false;
         }
         
-        clear (): void {
-            
+        clear (): boolean {
+            let clearStatus = true;
+            this._data.forEach(dataItem => {
+                !this.removeItem(dataItem) ? clearStatus = false : null;
+            })
+            return clearStatus;
+        }
+    }
+    
+    class LocalStorage {
+        
+        private _data: string[] = [];
+        
+        constructor (name?: string, value?: string) {
+            name && value && this.setItem(name, value);
+        }
+        
+        setItem (name: string, value: string, expires?: Date): boolean {
+            if(!name || !value) {
+                return false;
+            }
+            else {
+                root.localStorage.setItem(name, value);
+                this._data.push(name);
+                return true;
+            }
+        }
+        
+        set (data: {[key: string] : any}): boolean {
+            let setStatus = true,
+                keys = Object.keys(data),
+                dataLength = keys.length;
+            keys.forEach(key => {
+                !this.setItem(key, data[key]) ? setStatus = false : null;
+            });
+            return setStatus;
+        }
+        
+        get (name: string): string {
+            return name ? root.localStorage.getItem(name) : '';
+        }
+        
+        getAll (): {} | {[key: string]: string} {
+            let result: {[key: string] : any} = {};
+            this._data.forEach(dataItem => {
+                result[dataItem] = this.get(dataItem);
+            })
+            return result;
+        }
+        
+        removeItem (name: string): boolean {
+            if (name && this._data.indexOf(name) >= 0) {
+                root.localStorage.removeItem(name);
+                return true;
+            }
+            return false;
+        }
+        
+        clear (): boolean {
+            let clearStatus = true;
+            this._data.forEach(dataItem => {
+                !this.removeItem(dataItem) ? clearStatus = false : null;
+            })
+            return clearStatus;
         }
     }
     
