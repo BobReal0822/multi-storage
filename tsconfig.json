@@ -17,7 +17,7 @@
         "!node_modules/**"
     ],
     "files": [
-        "lib/client-flag.ts",
+        "lib/brower-storage.ts",
         "test/test.ts",
         "typings/mocha/mocha.d.ts",
         "typings/node/node.d.ts",
