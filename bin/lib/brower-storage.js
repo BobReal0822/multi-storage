@@ -7,8 +7,8 @@
     var root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
-    var ClientFlag = (function () {
-        function ClientFlag(settings) {
+    var BrowerStorage = (function () {
+        function BrowerStorage(settings) {
             this._config = {
                 flagName: 'flagId',
                 userData: {
@@ -16,7 +16,7 @@
                     className: 'client-flag'
                 },
                 indexedDb: {
-                    dbName: 'clientFlag',
+                    dbName: 'browerStorage',
                     tableName: 'flagTable'
                 }
             };
@@ -27,17 +27,19 @@
                 flash: true,
                 indexedDB: true
             };
-            for (var key in this._defaultSettings) {
-                this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
-            }
+            settings ? function () {
+                for (var key in this._defaultSettings) {
+                    this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
+                }
+            }() : this._setting = this._defaultSettings;
         }
-        ClientFlag.prototype.setItem = function (name, value) {
+        BrowerStorage.prototype.setItem = function (name, value) {
             if (!name || !value) {
                 return false;
             }
             this._broadcast({ name: name, value: value }, 'setItem');
         };
-        ClientFlag.prototype.set = function (data) {
+        BrowerStorage.prototype.set = function (data) {
             var dataLength = Object.keys(data).length;
             if (dataLength == 1) {
                 this._broadcast(data, 'set');
@@ -47,15 +49,15 @@
             }
             return false;
         };
-        ClientFlag.prototype.getItem = function () {
+        BrowerStorage.prototype.getItem = function () {
         };
-        ClientFlag.prototype.get = function () {
+        BrowerStorage.prototype.get = function () {
         };
-        ClientFlag.prototype.clear = function () {
+        BrowerStorage.prototype.clear = function () {
         };
-        ClientFlag.prototype.removeItem = function (name) {
+        BrowerStorage.prototype.removeItem = function (name) {
         };
-        ClientFlag.prototype._broadcast = function (data, func) {
+        BrowerStorage.prototype._broadcast = function (data, func) {
             for (var key in this._setting) {
                 if (this._setting[key]) {
                     var storageClass = key[0].toUpperCase() + key.substring(1, key.length);
@@ -63,7 +65,7 @@
                 }
             }
         };
-        return ClientFlag;
+        return BrowerStorage;
     })();
     var LocalStorage = (function () {
         function LocalStorage(name, value) {
@@ -181,6 +183,6 @@
         };
         return Flash;
     })();
-    return ClientFlag;
+    root.BrowerStorage = BrowerStorage;
 }());
 //# sourceMappingURL=brower-storage.js.map

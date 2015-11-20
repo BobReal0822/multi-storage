@@ -20,7 +20,7 @@
             return;
         }
         
-        var flag = new clientFlag();
+        var flag = new BrowerStorage();
         console.log('client flag', flag);
     });
     

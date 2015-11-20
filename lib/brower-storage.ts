@@ -3,21 +3,12 @@
  * @author ephoton
  * @link https://github.com/ephoton/client-flag
  */
-
+    
 (function () {
 
     var root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
-    
-    interface clientFlagInfo {
-        [key: string]: boolean;
-        cookie: boolean;
-        localStorage: boolean;
-        userData: boolean;
-        flash: boolean;
-        indexedDB: boolean;
-    }
     
     interface IndexedDBInfo {
         dbName: string,
@@ -33,7 +24,16 @@
         swfPath: string;
     }
     
-    class ClientFlag {
+    interface BrowerStorageInfo {
+        [key: string]: boolean;
+        cookie: boolean;
+        localStorage: boolean;
+        userData: boolean;
+        flash: boolean;
+        indexedDB: boolean;
+    }
+
+    class BrowerStorage {
 
         _config = {
             flagName: 'flagId',
@@ -42,12 +42,12 @@
                 className: 'client-flag'
             },
             indexedDb: {
-                dbName: 'clientFlag',
+                dbName: 'browerStorage',
                 tableName: 'flagTable'
             }
         }
         
-       _defaultSettings = <clientFlagInfo>{
+       _defaultSettings = <BrowerStorageInfo>{
             cookie: true,
             localStorage: true,
             userData: true,
@@ -55,12 +55,12 @@
             indexedDB: true
         }
         
-        _setting: clientFlagInfo;
+        _setting: BrowerStorageInfo;
         
-        constructor (settings: clientFlagInfo) {
-            for(let key in this._defaultSettings) {
+        constructor (settings?: BrowerStorageInfo) {
+            settings ? function(){for(let key in this._defaultSettings) {
                 this._setting[key] = !!settings[key] ? settings[key] : this._defaultSettings[key];
-            }
+            }}(): this._setting = this._defaultSettings;
         }
         
         setItem (name: string, value: string) {
@@ -270,5 +270,5 @@
         }
     }
     
-    return ClientFlag;
+    root.BrowerStorage = BrowerStorage;
 }());
