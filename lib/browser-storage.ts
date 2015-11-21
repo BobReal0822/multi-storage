@@ -12,6 +12,7 @@
         this;
     
     interface IndexedDBInfo {
+        [key: string]: string;
         dbName: string,
         tableName: string,
     }
@@ -42,6 +43,7 @@
     // 优化
     let forEach = Array.prototype.forEach;
     let map = Array.prototype.map;
+    Object.keys({});
 
     class BrowerStorage {
         
@@ -59,7 +61,7 @@
             }
         }
         
-       private _defaultSettings = <BrowerStorageInfo>{
+        private _defaultSettings = <BrowerStorageInfo>{
             cookie: true,
             localStorage: true,
             userData: true,
@@ -340,43 +342,83 @@
     
     class IndexedDB {
         
-        _settings: IndexedDBInfo;
+        private _config: IndexedDBInfo = {
+            dbName: 'browerStorageDB',
+            tableName: 'browerStorage'
+        };
         
-        constructor (setting?: IndexedDBInfo) {
-            setting ? this._settings = setting : null;
+        private _settings: IndexedDBInfo; 
+        
+        private _defaultSettings: IndexedDBInfo = {
+            dbName: 'browerStorageDB',
+            tableName: 'browerStorage'
+        };
+        
+        private openDB (name: string, callback: (result: any) => any): any {
+            let request = root.indexedDB.open(name);
+            request.onerror = function(event: any){
+                console.log('open error');
+            };
+            request.onsuccess = function(event: any): any{
+                console.log('open success')
+                return  callback.call(this, event.target.result);
+            };
         }
         
-        set (name:string, value: string) {
-            console.log('in IndexedDB set:', name , value);
+        constructor (settings?: IndexedDBInfo) {
+            this._settings = this._defaultSettings;
+            if(settings) {
+                for(let key in this._defaultSettings) {
+                    settings[key] === undefined || typeof settings[key] === 'undefined' ? null : this._settings[key] = settings[key];
+                }
+            }
+        }
+        
+        set () {
+            console.log('in IndexedDB set:');
+            let localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
+            let result = this.openDB('test', function(result) {
+                console.log('result:', result);
+            });
+            const customerData = [
+                { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+            ];
+            console.log('indexedDb set result:', result);
             
+            // dbRequest.onsuccess = function(event: any) {
+            //     let db = event.target.result;
+            //     console.log('success in IndexedDB set:', db);
+            //     var objectStore = db.createObjectStore("students", { keyPath: "ssn" });
+            //     objectStore.createIndex("name", "name", { unique: false });
+            //     objectStore.createIndex("email", "email", { unique: true });
+                
+            //     objectStore.transaction.oncomplete = function(event: any) {
+            //         var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
+            //         for (var i in customerData) {
+            //             customerObjectStore.add(customerData[i]);
+            //         }
+            //     };
+            //     console.log('onsuccess in IndexedDB get:', db, objectStore);
+            // };
+            // dbRequest.onupgradeneeded = function(event: any) {
+            //     let db = event.target.result;
+            //     var objectStore = db.createObjectStore("students", { keyPath: "ssn" });
+            //     objectStore.createIndex("name", "name", { unique: false });
+            //     objectStore.createIndex("email", "email", { unique: true });
+                
+            //     objectStore.transaction.oncomplete = function(event: any) {
+            //         var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
+            //         for (var i in customerData) {
+            //             customerObjectStore.add(customerData[i]);
+            //         }
+            //     };
+            // }
         }
         
         get (name: string) {
             console.log('in IndexedDB get:', name );
-            var localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
-            var dbRequest = localIndexedDB.open(this._settings.dbName);
-            dbRequest.onerror = function(event: any) {
-                console.log('error in setIindexedDB:', event);
-            }
-            dbRequest.onupgradeneeded = function(event: any) {
-                var db = event.target.result;
-                var store = db.createObjectStore(this._settings.tableName, {
-                    keyPath: "name",
-                    unique: false
-                })
-    
-            }
-            // dbRequest.onsuccess = function(event: any) {
-            //     var idb = event.target.result;
-            //     if (idb.objectStoreNames.contains("evercookie")) {
-            //         var tx = idb.transaction(["evercookie"], "readwrite");
-            //         var objst = tx.objectStore("evercookie");
-            //         var qr = objst.put({
-            //             "name": name,
-            //             "value": value
-            //         })
-            //     } idb.close();
-            // }
+
         }
         
         clear (): void {
@@ -419,5 +461,5 @@
     root.Cookie = Cookie;
     root.LocalStorage = LocalStorage;
     root.Flash = Flash;
-    root.IndexedDB = IndexedDB;
+    root.BSIndexedDB = IndexedDB;
 }());

@@ -35,7 +35,7 @@
 
     // test cookie
     var
-        testStorage = function() {
+        testStorage = function () {
             var storage = new BrowerStorage({
                 cookie: true,
                 localStorage: false,
@@ -54,7 +54,7 @@
             console.log('after set:\n', document.cookie);
             
         },
-        testCookie = function() {
+        testCookie = function () {
             var cookie = new Cookie();
             console.log('before test:\n', document.cookie)
             console.log('cookie setItem:\n', cookie.setItem('setItem', 100));
@@ -73,7 +73,7 @@
             console.log('console clear:\n', cookie.clear());
             console.log('atfer clear:\n', document.cookie);
         },
-        testLocalstorage = function() {
+        testLocalstorage = function () {
             var localStorage1 = new LocalStorage();
             console.log('before test:\n', self.localStorage);
             console.log('localStorage setItem:\n', localStorage1.setItem('localA', 123));
@@ -92,11 +92,20 @@
             console.log('localStorage clear:\n', localStorage1.clear());
             console.log('after clear:\n', localStorage);
             localStorage.clear();
+        },
+        testIndexedDb = function () {
+            var localIndexedDB = new BSIndexedDB();
+            localIndexedDB.set();
+//            localIndexedDB.get('test');
+        },
+        testUserData = function () {
+            
         }
     ;
     
+//    testStorage();
 //    testCookie();
 //    testLocalstorage();
-    testStorage();
+    testIndexedDb();
     
 }());

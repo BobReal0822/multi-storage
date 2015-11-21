@@ -10,6 +10,7 @@
         this;
     var forEach = Array.prototype.forEach;
     var map = Array.prototype.map;
+    Object.keys({});
     var BrowerStorage = (function () {
         function BrowerStorage(settings) {
             this._data = [];
@@ -258,26 +259,46 @@
         return UserData;
     })();
     var IndexedDB = (function () {
-        function IndexedDB(setting) {
-            setting ? this._settings = setting : null;
+        function IndexedDB(settings) {
+            this._config = {
+                dbName: 'browerStorageDB',
+                tableName: 'browerStorage'
+            };
+            this._defaultSettings = {
+                dbName: 'browerStorageDB',
+                tableName: 'browerStorage'
+            };
+            this._settings = this._defaultSettings;
+            if (settings) {
+                for (var key in this._defaultSettings) {
+                    settings[key] === undefined || typeof settings[key] === 'undefined' ? null : this._settings[key] = settings[key];
+                }
+            }
         }
-        IndexedDB.prototype.set = function (name, value) {
-            console.log('in IndexedDB set:', name, value);
+        IndexedDB.prototype.openDB = function (name, callback) {
+            var request = root.indexedDB.open(name);
+            request.onerror = function (event) {
+                console.log('open error');
+            };
+            request.onsuccess = function (event) {
+                console.log('open success');
+                return callback.call(this, event.target.result);
+            };
+        };
+        IndexedDB.prototype.set = function () {
+            console.log('in IndexedDB set:');
+            var localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
+            var result = this.openDB('test', function (result) {
+                console.log('result:', result);
+            });
+            var customerData = [
+                { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+            ];
+            console.log('indexedDb set result:', result);
         };
         IndexedDB.prototype.get = function (name) {
             console.log('in IndexedDB get:', name);
-            var localIndexedDB = root.indexedDB = root.indexedDB || root.mozIndexedDB || root.webkitIndexedDB || window.msIndexedDB;
-            var dbRequest = localIndexedDB.open(this._settings.dbName);
-            dbRequest.onerror = function (event) {
-                console.log('error in setIindexedDB:', event);
-            };
-            dbRequest.onupgradeneeded = function (event) {
-                var db = event.target.result;
-                var store = db.createObjectStore(this._settings.tableName, {
-                    keyPath: "name",
-                    unique: false
-                });
-            };
         };
         IndexedDB.prototype.clear = function () {
             console.log('in IndexedDB clear:');
@@ -312,6 +333,6 @@
     root.Cookie = Cookie;
     root.LocalStorage = LocalStorage;
     root.Flash = Flash;
-    root.IndexedDB = IndexedDB;
+    root.BSIndexedDB = IndexedDB;
 }());
-//# sourceMappingURL=brower-storage.js.map
+//# sourceMappingURL=browser-storage.js.map
