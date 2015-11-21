@@ -18,6 +18,7 @@
     ],
     "files": [
         "lib/browser-storage.ts",
+        "test/test.ts",
         "typings/mocha/mocha.d.ts",
         "typings/node/node.d.ts",
         "typings/tsd.d.ts"
