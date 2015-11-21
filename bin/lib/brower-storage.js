@@ -4,11 +4,15 @@
  * @link https://github.com/ephoton/client-flag
  */
 (function () {
+    'use strict';
     var root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
+    var forEach = Array.prototype.forEach;
+    var map = Array.prototype.map;
     var BrowerStorage = (function () {
         function BrowerStorage(settings) {
+            this._data = [];
             this._config = {
                 flagName: 'flagId',
                 userData: {
@@ -35,62 +39,61 @@
             }
         }
         BrowerStorage.prototype.setItem = function (name, value) {
-            console.log('in setItem:', name, value);
-            if (!name || !value) {
-                return false;
-            }
-            this._broadcast({ name: name, value: value }, function setItem() { console.log('test'); });
+            return this._broadcast('setItem', { name: name, value: value });
         };
         BrowerStorage.prototype.set = function (data) {
-            var dataLength = Object.keys(data).length;
-            if (dataLength == 1) {
-            }
-            else if (dataLength > 1) {
-            }
-            return false;
+            return this._broadcast('set', data);
         };
-        BrowerStorage.prototype.getItem = function () {
+        BrowerStorage.prototype.getItem = function (name) {
+            return this._broadcastGet('getItem', name);
         };
         BrowerStorage.prototype.get = function () {
-        };
-        BrowerStorage.prototype.clear = function () {
+            return this._broadcastGet('get');
         };
         BrowerStorage.prototype.removeItem = function (name) {
+            return this._broadcast('removeItem', name);
         };
-        BrowerStorage.prototype._broadcast = function (data, func) {
-            console.log('in _broadcast:', data, func);
-            console.log('this setting:', this._setting);
-            for (var key in this._setting) {
-                var _class = void 0;
-                if (this._setting[key]) {
-                    console.log('func', func);
-                    console.log('Class', key);
-                    switch (key) {
-                        case 'cookie':
-                            _class = new Cookie();
-                            break;
-                        case 'localStorage':
-                            _class = new LocalStorage();
-                            break;
-                        case 'userData':
-                            _class = new UserData();
-                            break;
-                        case 'flash':
-                            _class = new Flash();
-                            break;
-                        case 'indexedDB':
-                            _class = new IndexedDB();
-                            break;
-                        default:
-                            _class = new Cookie();
-                    }
-                    for (var key_1 in _class) {
-                        console.log('key in cookie:', key_1);
-                        if (key_1 == func) {
-                        }
-                    }
-                    console.log('has prop:', func.apply(_class, data));
+        BrowerStorage.prototype.clear = function () {
+            return this._broadcast('clear');
+        };
+        BrowerStorage.prototype.getClassByName = function (name) {
+            var _class;
+            if (this._setting[name]) {
+                switch (name) {
+                    case 'cookie':
+                        _class = new Cookie();
+                        break;
+                    case 'localStorage':
+                        _class = new LocalStorage();
+                        break;
+                    case 'userData':
+                        _class = new UserData();
+                        break;
+                    case 'flash':
+                        _class = new Flash();
+                        break;
+                    case 'indexedDB':
+                        _class = new IndexedDB();
+                        break;
+                    default:
+                        _class = new Cookie();
                 }
+            }
+            return _class;
+        };
+        BrowerStorage.prototype._broadcast = function (func, data) {
+            var resultStatus = false;
+            for (var key in this._setting) {
+                var _class = this.getClassByName(key);
+                (data ? _class[func].call(this, data) : _class[func].call(this)) ? resultStatus = true : null;
+            }
+            return resultStatus;
+        };
+        BrowerStorage.prototype._broadcastGet = function (func, data) {
+            var resultData;
+            for (var key in this._setting) {
+                var _class = this.getClassByName(key);
+                data ? _class[func].call(this, data) : _class[func].call(this);
             }
         };
         return BrowerStorage;
@@ -101,14 +104,17 @@
             name && value && this.setItem(name, value);
         }
         Cookie.prototype.setItem = function (name, value, expires) {
-            if (!name || !value) {
+            var localValue = value || '', localName = '';
+            if (typeof name === 'object' && !value) {
+                localName = name['name'];
+                localValue = name['value'];
+            }
+            if (!localName && !localValue) {
                 return false;
             }
-            else {
-                root.document.cookie = name + '=' + value + (expires ? 'expires=' + expires : '');
-                this._data.push(name);
-                return true;
-            }
+            root.document.cookie = localName + '=' + localValue + (expires ? 'expires=' + expires : '');
+            this._data.push(localName);
+            return true;
         };
         Cookie.prototype.set = function (data) {
             var _this = this;

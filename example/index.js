@@ -35,6 +35,25 @@
 
     // test cookie
     var
+        testStorage = function() {
+            var storage = new BrowerStorage({
+                cookie: true,
+                localStorage: false,
+                userData: false,
+                flash: false,
+                indexedDB: false
+            });
+            console.log('storage setItem:\n', storage.setItem('item1', 2));
+            console.log('after setItem:', document.cookie);
+            console.log('storage set:\n', storage.set({
+                set11: '1',
+                set22: '2',
+                set33: '3',
+                set44: '4'
+            }));
+            console.log('after set:\n', document.cookie);
+            
+        },
         testCookie = function() {
             var cookie = new Cookie();
             console.log('before test:\n', document.cookie)
@@ -77,6 +96,7 @@
     ;
     
 //    testCookie();
-    testLocalstorage();
+//    testLocalstorage();
+    testStorage();
     
 }());

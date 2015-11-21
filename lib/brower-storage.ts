@@ -5,8 +5,9 @@
  */
     
 (function () {
-
-    var root = typeof self == 'object' && self.self === self && self ||
+    'use strict';
+    
+    let root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
     
@@ -38,8 +39,14 @@
         indexedDB: boolean;
     }
 
-    class BrowerStorage {
+    // 优化
+    let forEach = Array.prototype.forEach;
+    let map = Array.prototype.map;
 
+    class BrowerStorage {
+        
+        private _data: string[] = [];
+        
         private _config = {
             flagName: 'flagId',
             userData: {
@@ -71,80 +78,72 @@
             }
         }
         
-        setItem (name: string, value: string) {
-            console.log('in setItem:', name, value);
-            if(!name || !value) {
-                return false;
-            }
-            this._broadcast({name, value}, function setItem(): any{console.log('test')});
+        setItem (name: string, value: string): boolean {
+            return this._broadcast('setItem', {name, value});
         }
         
         set (data: {[key: string] : any}) {
-            let dataLength = Object.keys(data).length;
-            if (dataLength == 1) {
-                // this._broadcast(data, 'set');
-            }
-            else if (dataLength > 1) {
-                // this._broadcast(data, 'setItem');
-            }
-            return false;
+            return this._broadcast('set', data);
         }
         
-        getItem () {
-            
+        getItem (name: string): string {
+            return this._broadcastGet('getItem', name);
         }
         
-        get () {
-            
+        get (): {} | {[key: string]: string}  {
+            return this._broadcastGet('get');
         }
         
-        clear () {
-            
+        removeItem (name: string): boolean {
+            return this._broadcast('removeItem', name);
         }
         
-        removeItem (name: string): void {
-            
+        clear (): boolean {
+            return this._broadcast('clear');
         }
         
-        private _broadcast (data: {[key: string] : any}, func: () => {}) {
-            console.log('in _broadcast:', data, func);
-            console.log('this setting:', this._setting);
-            for (let key in this._setting) {
-                let _class: Cookie | LocalStorage | Flash | UserData | IndexedDB;
-                if (this._setting[key]) {
-                    console.log('func', func);
-                    console.log('Class', key);
-                    switch(key) {
-                        case 'cookie':
-                            _class = new Cookie();
-                            break;
-                        case 'localStorage':
-                            _class = new LocalStorage();
-                            break;
-                        case 'userData':
-                            _class = new UserData();
-                            break;
-                        case 'flash':
-                            _class = new Flash();
-                            break;
-                        case 'indexedDB':
-                            _class = new IndexedDB();
-                            break;
-                        default:
-                            _class = new Cookie();
-                    }
-                    // _class.func.apply(this, data);
-                    for(let key in _class) {
-                        console.log('key in cookie:', key);
-                        if(key == func) {
-                            // _class
-                        }
-                    }
-                    console.log('has prop:', func.apply(_class, data))
+        private getClassByName(name: string): Cookie | LocalStorage | Flash | UserData | IndexedDB {
+            let _class: Cookie | LocalStorage | Flash | UserData | IndexedDB;
+            if (this._setting[name]) {
+                switch(name) {
+                    case 'cookie':
+                        _class = new Cookie();
+                        break;
+                    case 'localStorage':
+                        _class = new LocalStorage();
+                        break;
+                    case 'userData':
+                        _class = new UserData();
+                        break;
+                    case 'flash':
+                        _class = new Flash();
+                        break;
+                    case 'indexedDB':
+                        _class = new IndexedDB();
+                        break;
+                    default:
+                        _class = new Cookie();
                 }
             }
+            return _class;
         }
         
+        private _broadcast (func: string, data?: {[key: string] : any}): any {
+            let resultStatus = false;
+            for (let key in this._setting) {
+                let _class = this.getClassByName(key);
+                (data ? (<any>_class)[func].call(this, data) : (<any>_class)[func].call(this)) ? resultStatus = true : null; 
+            }
+            return resultStatus;
+        }
+        
+        private _broadcastGet (func: string, data?: {[key: string] : any}): any {
+            let resultData: string | {} | {[key: string]: string};
+            for (let key in this._setting) {
+                let _class = this.getClassByName(key);
+                data ? (<any>_class)[func].call(this, data) : (<any>_class)[func].call(this); 
+            }
+        }
     }
 
     class Cookie {
@@ -155,15 +154,23 @@
             name && value && this.setItem(name, value);
         }
         
-        setItem (name: string, value: string, expires?: Date): boolean {
-            if(!name || !value) {
+        setItem (name: string | {}, value?: string, expires?: Date): boolean {
+            
+            let localValue = value || '',
+                localName = '';
+                
+            if(typeof name === 'object' && !value) {
+                localName = (<any>name)['name'];
+                localValue = (<any>name)['value'];
+            }
+            if(!localName && !localValue) {
                 return false;
             }
-            else {
-                root.document.cookie = name + '=' + value + (expires ? 'expires=' + expires : '');
-                this._data.push(name);
-                return true;
-            }
+            
+            root.document.cookie = localName + '=' + localValue + (expires ? 'expires=' + expires : '');
+            this._data.push(localName);
+            
+            return true;
         }
         
         set (data: {[key: string] : any}): boolean {
