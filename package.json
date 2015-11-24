@@ -1,8 +1,8 @@
 {
-  "name": "browser-storage",
+  "name": "multi-storage",
   "version": "1.0.0",
-  "description": "### A browser storage library that identifies client browser by persistent local data writen in [typescript](http://www.typescriptlang.org/).",
-  "main": "./bin/lib/browser-storage.js",
+  "description": "### A multi browser storage library that identifies client browser by persistent local data writen in [typescript](http://www.typescriptlang.org/).",
+  "main": "./bin/lib/multi-storage.js",
   "directories": {
     "example": "example",
     "test": "test"
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ephoton/browser-storage.git"
+    "url": "git+https://github.com/ephoton/multi-storage.git"
   },
   "author": "ephoton",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ephoton/browser-storage/issues"
+    "url": "https://github.com/ephoton/multi-storage/issues"
   },
-  "homepage": "https://github.com/ephoton/browser-storage#readme",
+  "homepage": "https://github.com/ephoton/multi-storage#readme",
   "devDependencies": {
     "globby": "^3.0.1",
     "gulp": "^3.9.0",

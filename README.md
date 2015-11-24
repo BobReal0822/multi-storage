@@ -1,3 +1,3 @@
-# browser-storage
+# multi-storage
 
-### A browser storage library that identifies client browser by persistent local data writen in [typescript](http://www.typescriptlang.org/).
+### A multi browser storage library that identifies client browser by persistent local data writen in [typescript](http://www.typescriptlang.org/).
