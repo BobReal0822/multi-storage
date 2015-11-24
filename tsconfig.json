@@ -17,7 +17,7 @@
         "!node_modules/**"
     ],
     "files": [
-        "lib/browser-storage.ts",
+        "lib/multi-storage.ts",
         "test/test.ts",
         "typings/mocha/mocha.d.ts",
         "typings/node/node.d.ts",

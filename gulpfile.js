@@ -1,12 +1,13 @@
 /// <reference path="typings/node/node.d.ts"/>
 
-var fs = require('fs');
-var gulp = require('gulp');
-var globby = require('globby');
+var fs = require('fs'), 
+    gulp = require('gulp'),
+    globby = require('globby'),
+    connect = require('gulp-connect');
 
 var exec = require('child_process').exec;
 
-gulp.task('default', ['sync', 'build-watch']);
+// gulp.task('default', ['sync', 'build-watch']);
 
 gulp.task('sync', function(callback) {
     var tsConfig = require('./tsconfig.json');
@@ -45,3 +46,24 @@ gulp.task('test', function (callback) {
     cp.stdout.pipe(process.stdout);
     cp.stderr.pipe(process.stdout);
 });
+
+gulp.task('connect', function() {
+    connect.server({
+        root: 'example',
+        livereload: true
+    });
+});
+ 
+gulp.task('html', function () {
+    gulp.src('./example/*.html')
+        .pipe(connect.reload());
+});
+ 
+gulp.task('watch', function () {
+    var cp = exec('tsc -w');
+    cp.stdout.pipe(process.stdout);
+    cp.stderr.pipe(process.stdout);
+    gulp.watch(['./example/*.html'], ['html']);
+});
+ 
+gulp.task('default', ['connect', 'watch']);
