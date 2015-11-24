@@ -1,13 +1,13 @@
 {
-  "name": "client-flag",
+  "name": "browser-storage",
   "version": "1.0.0",
   "description": "",
-  "main": "./bin/client-flag.js",
+  "main": "./bin/lib/browser-storage.js",
   "directories": {
     "test": "gulp test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
