@@ -3,16 +3,16 @@
  * @author ephoton
  * @link https://github.com/ephoton/client-flag
  */
+var Utils = require('./utils');
 (function () {
     'use strict';
     var root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
-    var forEach = Array.prototype.forEach;
-    var map = Array.prototype.map;
-    Object.keys({});
+    var MAX_SAFE_NUMBER = Math.pow(2, 53) - 1;
     var BrowerStorage = (function () {
         function BrowerStorage(settings) {
+            var _this = this;
             this._data = [];
             this._config = {
                 flagName: 'flagId',
@@ -33,11 +33,10 @@
                 indexedDB: true
             };
             this._setting = this._defaultSettings;
-            if (settings) {
-                for (var key in this._defaultSettings) {
-                    settings[key] === undefined || typeof settings[key] === 'undefined' ? null : this._setting[key] = settings[key];
-                }
-            }
+            settings ?
+                Utils.each(Utils.keys(this._defaultSettings), function (key) {
+                    settings[key] === undefined || typeof settings[key] === 'undefined' ? null : _this._setting[key] = settings[key];
+                }) : null;
         }
         BrowerStorage.prototype.setItem = function (name, value) {
             return this._broadcast('setItem', { name: name, value: value });

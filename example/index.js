@@ -97,9 +97,6 @@
             var localIndexedDB = new BSIndexedDB();
             localIndexedDB.set();
 //            localIndexedDB.get('test');
-        },
-        testUserData = function () {
-            
         }
     ;
     
@@ -107,5 +104,5 @@
 //    testCookie();
 //    testLocalstorage();
     testIndexedDb();
-    
+        
 }());

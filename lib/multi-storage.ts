@@ -4,13 +4,16 @@
  * @link https://github.com/ephoton/client-flag
  */
     
+import * as Utils from './utils';
+
 (function () {
     'use strict';
     
     let root = typeof self == 'object' && self.self === self && self ||
         typeof global == 'object' && global.global === global && global ||
         this;
-    
+    const MAX_SAFE_NUMBER = Math.pow(2, 53) - 1;
+
     interface IndexedDBInfo {
         [key: string]: string;
         dbName: string,
@@ -39,12 +42,7 @@
         flash: boolean;
         indexedDB: boolean;
     }
-
-    // 优化
-    let forEach = Array.prototype.forEach;
-    let map = Array.prototype.map;
-    Object.keys({});
-
+    
     class BrowerStorage {
         
         private _data: string[] = [];
@@ -73,11 +71,11 @@
         
         constructor (settings?: BrowerStorageInfo) {
             this._setting = this._defaultSettings;
-            if(settings) {
-                for(let key in this._defaultSettings) {
+            settings ? 
+                Utils.each(Utils.keys(this._defaultSettings), key => {
                     settings[key] === undefined || typeof settings[key] === 'undefined' ? null : this._setting[key] = settings[key];
-                }
-            }
+                }) : null;
+            
         }
         
         setItem (name: string, value: string): boolean {
@@ -132,6 +130,8 @@
         
         private _broadcast (func: string, data?: {[key: string] : any}): any {
             let resultStatus = false;
+            
+            // use each & keys to optimize
             for (let key in this._setting) {
                 let _class = this.getClassByName(key);
                 (data ? (<any>_class)[func].call(this, data) : (<any>_class)[func].call(this)) ? resultStatus = true : null; 

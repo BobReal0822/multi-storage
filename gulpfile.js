@@ -54,8 +54,8 @@ gulp.task('connect', function() {
     });
 });
  
-gulp.task('html', function () {
-    gulp.src('./example/*.html')
+gulp.task('live-front-end', function () {
+    gulp.src('./example/*.*')
         .pipe(connect.reload());
 });
  
@@ -63,7 +63,7 @@ gulp.task('watch', function () {
     var cp = exec('tsc -w');
     cp.stdout.pipe(process.stdout);
     cp.stderr.pipe(process.stdout);
-    gulp.watch(['./example/*.html'], ['html']);
+    gulp.watch(['./example/*.*'], ['live-front-end']);
 });
  
 gulp.task('default', ['connect', 'watch']);
