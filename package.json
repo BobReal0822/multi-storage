@@ -1,27 +1,36 @@
 {
   "name": "browser-storage",
   "version": "1.0.0",
-  "description": "",
+  "description": "### A browser storage library that identifies client browser by persistent local data writen in [typescript](http://www.typescriptlang.org/).",
   "main": "./bin/lib/browser-storage.js",
   "directories": {
-    "test": "gulp test"
+    "example": "example",
+    "test": "test"
   },
   "scripts": {
     "test": "gulp test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ephoton/client-flag.git"
+    "url": "git+https://github.com/ephoton/browser-storage.git"
   },
   "author": "ephoton",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ephoton/client-flag/issues"
+    "url": "https://github.com/ephoton/browser-storage/issues"
   },
-  "homepage": "https://github.com/ephoton/client-flag#readme",
+  "homepage": "https://github.com/ephoton/browser-storage#readme",
   "devDependencies": {
     "globby": "^3.0.1",
     "gulp": "^3.9.0",
     "mocha": "^2.3.3"
-  }
+  },
+  "dependencies": {
+    "gulp": "^3.9.0",
+    "globby": "^3.0.1"
+  },
+  "keywords": [
+    "browser",
+    "storage"
+  ]
 }
