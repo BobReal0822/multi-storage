@@ -329,9 +329,5 @@ var Utils = require('./utils');
         return Flash;
     })();
     root.BrowerStorage = BrowerStorage;
-    root.Cookie = Cookie;
-    root.LocalStorage = LocalStorage;
-    root.Flash = Flash;
-    root.BSIndexedDB = IndexedDB;
 }());
 //# sourceMappingURL=multi-storage.js.map

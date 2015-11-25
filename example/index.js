@@ -94,15 +94,71 @@
             localStorage.clear();
         },
         testIndexedDb = function () {
-            var localIndexedDB = new BSIndexedDB();
-            localIndexedDB.set();
-//            localIndexedDB.get('test');
+            
+            var request = self.indexedDB.open('test1');
+            request.onsuccess = function(event) {
+                
+                var db = event.target.result;
+                console.log('in onsuccess:', db);
+                var transaction = //db.createObjectStore("students", { keyPath: "ssn" }) ||
+                    db.transaction(["students"], "readwrite");;
+//                objectStore.createIndex("name", "name", { unique: false });
+//                objectStore.createIndex("email", "email", { unique: true });
+                
+//                transaction.oncomplete = function(event) {
+//                    var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
+                var customerData = [
+                    { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                    { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+                ];
+                var store = transaction.objectStore('students');
+                    console.log('in transaction omcomplete:', customerData)
+                    for (var index = 0, length = customerData.length; index < length; index ++) {
+                        console.log('customerData:', customerData, index);
+                        store.add(customerData[index]);
+                    }
+//                };
+                console.log('onsuccess in IndexedDB get:', db, transaction);
+            };
+            request.onupgradeneeded = function(event) {
+                console.log('in onupgradeneeded')
+                var db = event.target.result;
+                var objectStore = db.createObjectStore("students", { keyPath: "ssn" });
+                objectStore.createIndex("name", "name", { unique: false });
+                objectStore.createIndex("email", "email", { unique: true });
+                
+                objectStore.transaction.oncomplete = function(event) {
+                    var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
+                    for (var i in customerData) {
+                        customerObjectStore.add(customerData[i]);
+                    }
+                };
+            }
+        }，
+        testUserData = function () {
+            var o = document.createElement('input');
+            o.type = "hidden";
+            o.addBehavior ("#default#userData");
+            //UserData.o.style.behavior = "url('#default#userData')" ;
+            //上面的语句也是一样的作用
+            document.body.appendChild(o);
+            o.setAttribute("code", "hello world!");
+            o.save("baidu");
+            console.log('after set user data:');
+            
+            
+            var a = UserData.a;      
+            // 保持对象的一致
+            a.load('baidu'); 
+            console.log('get user data a:', a);
+            console.log('data:', a.getAttribute('code'));
         }
     ;
-    
+
 //    testStorage();
 //    testCookie();
 //    testLocalstorage();
-    testIndexedDb();
+//    testIndexedDb();
+    testUserData();
         
 }());

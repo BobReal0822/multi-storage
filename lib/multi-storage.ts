@@ -386,40 +386,58 @@ import * as Utils from './utils';
             ];
             console.log('indexedDb set result:', result);
             
-            // dbRequest.onsuccess = function(event: any) {
-            //     let db = event.target.result;
-            //     console.log('success in IndexedDB set:', db);
-            //     var objectStore = db.createObjectStore("students", { keyPath: "ssn" });
-            //     objectStore.createIndex("name", "name", { unique: false });
-            //     objectStore.createIndex("email", "email", { unique: true });
+            var request = self.indexedDB.open('test1');
+            request.onsuccess = function(event: any) {
                 
-            //     objectStore.transaction.oncomplete = function(event: any) {
-            //         var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
-            //         for (var i in customerData) {
-            //             customerObjectStore.add(customerData[i]);
-            //         }
-            //     };
-            //     console.log('onsuccess in IndexedDB get:', db, objectStore);
-            // };
-            // dbRequest.onupgradeneeded = function(event: any) {
-            //     let db = event.target.result;
-            //     var objectStore = db.createObjectStore("students", { keyPath: "ssn" });
-            //     objectStore.createIndex("name", "name", { unique: false });
-            //     objectStore.createIndex("email", "email", { unique: true });
+                var db = event.target.result;
+                console.log('in onsuccess:', db);
+                var transaction = //db.createObjectStore("students", { keyPath: "ssn" }) ||
+                    db.transaction(["students"], "readwrite");;
+//                objectStore.createIndex("name", "name", { unique: false });
+//                objectStore.createIndex("email", "email", { unique: true });
                 
-            //     objectStore.transaction.oncomplete = function(event: any) {
-            //         var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
-            //         for (var i in customerData) {
-            //             customerObjectStore.add(customerData[i]);
-            //         }
-            //     };
-            // }
+//                transaction.oncomplete = function(event) {
+//                    var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
+                var customerData = [
+                    { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                    { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+                ];
+                var store = transaction.objectStore('students');
+                    console.log('in transaction omcomplete:', customerData)
+                    for (var index = 0, length = customerData.length; index < length; index ++) {
+                        console.log('customerData:', customerData, index);
+                        store.add(customerData[index]);
+                    }
+//                };
+                console.log('onsuccess in IndexedDB get:', db, transaction);
+            };
         }
-        
         
         get (name: string) {
             console.log('in IndexedDB get:', name );
-
+            var request = self.indexedDB.open('test1');
+            request.onsuccess = function(event: any) {
+                
+                var db = event.target.result;
+                console.log('in onsuccess:', db);
+                var transaction = //db.createObjectStore("students", { keyPath: "ssn" }) ||
+                    db.transaction(["students"], "readwrite");;
+//                objectStore.createIndex("name", "name", { unique: false });
+//                objectStore.createIndex("email", "email", { unique: true });
+                
+//                transaction.oncomplete = function(event) {
+//                    var customerObjectStore = db.transaction("students", "readwrite").objectStore("customers");
+                var customerData = [
+                    { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                    { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+                ];
+                var store = transaction.objectStore('students');
+                var dataRequest=store.get('value');
+                dataRequest.onsuccess = function(event: any) {
+                   console.log('request result:', request.result);
+                }
+                console.log('onsuccess in IndexedDB get:', db, transaction);
+            };
         }
         
         clear (): void {
@@ -459,8 +477,8 @@ import * as Utils from './utils';
     }
     
     root.BrowerStorage = BrowerStorage;
-    root.Cookie = Cookie;
-    root.LocalStorage = LocalStorage;
-    root.Flash = Flash;
-    root.BSIndexedDB = IndexedDB;
+    // root.Cookie = Cookie;
+    // root.LocalStorage = LocalStorage;
+    // root.Flash = Flash;
+    // root.BSIndexedDB = IndexedDB;
 }());
