@@ -11,7 +11,7 @@ export function each (object: any | Object, iteratee: (item: any, index: string 
 			iteratee((<any>object)[index], index);
 		}
 	} else {
-		var _keys = keys(object);
+		let _keys = keys(object);
 		for (let index = 0, length = _keys.length; index < length; index ++) {
 			iteratee((<any>object)[_keys[index]], _keys[index]);
 		}
@@ -22,7 +22,7 @@ export function each (object: any | Object, iteratee: (item: any, index: string 
 
 // debug
 export function map (object: Array<any> | Object, iteratee: (item: any, index: string| number) => any ) {
-    var _keys = !isArrayLike(object) && keys(object),
+    let _keys = !isArrayLike(object) && keys(object),
         length = (_keys || <any>object).length,
         results = Array(length);
     for (let index = 0; index < length; index++) {
@@ -53,8 +53,8 @@ export function keys (object: any): string[] {
 
     // if (!_.isObject(obj)) return [];
     // if (nativeKeys) return nativeKeys(obj);
-    // var keys = [];
-    // for (var key in obj) if (_.has(obj, key)) keys.push(key);
+    // let keys = [];
+    // for (let key in obj) if (_.has(obj, key)) keys.push(key);
     // // Ahem, IE < 9.
     // if (hasEnumBug) collectNonEnumProps(obj, keys);
     // return keys;
@@ -75,3 +75,25 @@ export function upperFirstLetter(str: string) {
     str = str + "";
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function intersection(array: Array<any>[]) {
+	let result = <any>[];
+	let argsLength = arguments.length;
+	
+	for (let i = 0, length = array.length; i < length; i++) {
+		let item = array[i];
+		if (result.indexOf(item) > -1) {
+			continue;
+		}
+		let j: any;
+		for (j = 1; j < argsLength; j++) {
+			if (!(arguments[j].indexOf(item) > -1)) {
+				break;
+			}
+		}
+		if (j === argsLength) {
+			result.push(item);
+		}
+	}
+	return result;
+};
