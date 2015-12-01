@@ -1,7 +1,8 @@
 /**
  * 
  * @author ephoton
- * @link https://github.com/ephoton/client-flag
+ * @link https://github.com/ephoton/multi-storage
+ * 
  */
     
 import * as Utils from './utils';
@@ -34,7 +35,7 @@ import * as Utils from './utils';
         value: string;
     }
     
-    interface BrowerStorageInfo {
+    interface MultiStorageInfo {
         [key: string]: boolean;
         cookie: boolean;
         localStorage: boolean;
@@ -43,7 +44,11 @@ import * as Utils from './utils';
         indexedDB: boolean;
     }
     
-    class BrowerStorage {
+    enum MultiStorageStatus {
+        //
+    }
+    
+    class MultiStorage {
         
         private _data: string[] = [];
         
@@ -54,12 +59,12 @@ import * as Utils from './utils';
                 className: 'client-flag'
             },
             indexedDb: {
-                dbName: 'browerStorage',
+                dbName: 'MultiStorage',
                 tableName: 'flagTable'
             }
         }
         
-        private _defaultSettings = <BrowerStorageInfo>{
+        private _defaultSettings = <MultiStorageInfo>{
             cookie: true,
             localStorage: true,
             userData: true,
@@ -67,9 +72,9 @@ import * as Utils from './utils';
             indexedDB: true
         }
         
-        private _setting: BrowerStorageInfo;
+        private _setting: MultiStorageInfo;
         
-        constructor (settings?: BrowerStorageInfo) {
+        constructor (settings?: MultiStorageInfo) {
             this._setting = this._defaultSettings;
             settings ? 
                 Utils.each(Utils.keys(this._defaultSettings), key => {
@@ -91,7 +96,7 @@ import * as Utils from './utils';
         }
         
         get (): {} | {[key: string]: string}  {
-            return this._broadcastGet('get');
+            return Utils.intersection(this._broadcastGet('get'));
         }
         
         removeItem (name: string): boolean {
@@ -146,6 +151,8 @@ import * as Utils from './utils';
                 data ? (<any>_class)[func].call(this, data) : (<any>_class)[func].call(this); 
             }
         }
+        
+        
     }
 
     class Cookie {
@@ -343,15 +350,15 @@ import * as Utils from './utils';
     class IndexedDB {
         
         private _config: IndexedDBInfo = {
-            dbName: 'browerStorageDB',
-            tableName: 'browerStorage'
+            dbName: 'MultiStorageDB',
+            tableName: 'MultiStorage'
         };
         
         private _settings: IndexedDBInfo; 
         
         private _defaultSettings: IndexedDBInfo = {
-            dbName: 'browerStorageDB',
-            tableName: 'browerStorage'
+            dbName: 'MultiStorageDB',
+            tableName: 'MultiStorage'
         };
         
         private openDB (name: string, callback: (result: any) => any): any {
@@ -476,7 +483,7 @@ import * as Utils from './utils';
         }
     }
     
-    root.BrowerStorage = BrowerStorage;
+    root.MultiStorage = MultiStorage;
     // root.Cookie = Cookie;
     // root.LocalStorage = LocalStorage;
     // root.Flash = Flash;
