@@ -26,10 +26,6 @@ import * as Utils from './utils';
         className: string;
     }
     
-    interface FlashCookieInfo {
-        swfPath: string;
-    }
-    
     interface JsonInfo {
         name: string;
         value: string;
@@ -40,7 +36,6 @@ import * as Utils from './utils';
         cookie: boolean;
         localStorage: boolean;
         userData: boolean;
-        flash: boolean;
         indexedDB: boolean;
     }
     
@@ -68,7 +63,6 @@ import * as Utils from './utils';
             cookie: true,
             localStorage: true,
             userData: true,
-            flash: true,
             indexedDB: true
         }
         
@@ -107,8 +101,8 @@ import * as Utils from './utils';
             return this._broadcast('clear');
         }
         
-        private getClassByName(name: string): Cookie | LocalStorage | Flash | UserData | IndexedDB {
-            let _class: Cookie | LocalStorage | Flash | UserData | IndexedDB;
+        private getClassByName(name: string): Cookie | LocalStorage | UserData | IndexedDB {
+            let _class: Cookie | LocalStorage | UserData | IndexedDB;
             if (this._setting[name]) {
                 switch(name) {
                     case 'cookie':
@@ -119,9 +113,6 @@ import * as Utils from './utils';
                         break;
                     case 'userData':
                         _class = new UserData();
-                        break;
-                    case 'flash':
-                        _class = new Flash();
                         break;
                     case 'indexedDB':
                         _class = new IndexedDB();
@@ -457,35 +448,5 @@ import * as Utils from './utils';
         }
     };
     
-    class Flash {
-        
-        _setting: FlashCookieInfo;
-        
-        constructor (setting?: FlashCookieInfo) {
-            setting ? this._setting = setting : null;
-        }
-        
-        set (name: string, value: string) {
-            console.log('in Flash set:', name , value);
-        }
-        
-        get (name: string) {
-            console.log('in Flash get:', name);
-        }
-        
-        clear (): void {
-            console.log('in Flash clear:');
-            root.localStorage.clear();
-        }
-        
-        removeItem (name: string): void {
-            console.log('in Flash removeItem:');
-        }
-    }
-    
     root.MultiStorage = MultiStorage;
-    // root.Cookie = Cookie;
-    // root.LocalStorage = LocalStorage;
-    // root.Flash = Flash;
-    // root.BSIndexedDB = IndexedDB;
 }());

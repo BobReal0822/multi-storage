@@ -1,8 +1,3 @@
-/**
- *
- * @author ephoton
- * @link https://github.com/ephoton/client-flag
- */
 var Utils = require('./utils');
 (function () {
     'use strict';
@@ -10,8 +5,11 @@ var Utils = require('./utils');
         typeof global == 'object' && global.global === global && global ||
         this;
     var MAX_SAFE_NUMBER = Math.pow(2, 53) - 1;
-    var BrowerStorage = (function () {
-        function BrowerStorage(settings) {
+    var MultiStorageStatus;
+    (function (MultiStorageStatus) {
+    })(MultiStorageStatus || (MultiStorageStatus = {}));
+    var MultiStorage = (function () {
+        function MultiStorage(settings) {
             var _this = this;
             this._data = [];
             this._config = {
@@ -21,7 +19,7 @@ var Utils = require('./utils');
                     className: 'client-flag'
                 },
                 indexedDb: {
-                    dbName: 'browerStorage',
+                    dbName: 'MultiStorage',
                     tableName: 'flagTable'
                 }
             };
@@ -29,7 +27,6 @@ var Utils = require('./utils');
                 cookie: true,
                 localStorage: true,
                 userData: true,
-                flash: true,
                 indexedDB: true
             };
             this._setting = this._defaultSettings;
@@ -38,25 +35,25 @@ var Utils = require('./utils');
                     settings[key] === undefined || typeof settings[key] === 'undefined' ? null : _this._setting[key] = settings[key];
                 }) : null;
         }
-        BrowerStorage.prototype.setItem = function (name, value) {
+        MultiStorage.prototype.setItem = function (name, value) {
             return this._broadcast('setItem', { name: name, value: value });
         };
-        BrowerStorage.prototype.set = function (data) {
+        MultiStorage.prototype.set = function (data) {
             return this._broadcast('set', data);
         };
-        BrowerStorage.prototype.getItem = function (name) {
+        MultiStorage.prototype.getItem = function (name) {
             return this._broadcastGet('getItem', name);
         };
-        BrowerStorage.prototype.get = function () {
-            return this._broadcastGet('get');
+        MultiStorage.prototype.get = function () {
+            return Utils.intersection(this._broadcastGet('get'));
         };
-        BrowerStorage.prototype.removeItem = function (name) {
+        MultiStorage.prototype.removeItem = function (name) {
             return this._broadcast('removeItem', name);
         };
-        BrowerStorage.prototype.clear = function () {
+        MultiStorage.prototype.clear = function () {
             return this._broadcast('clear');
         };
-        BrowerStorage.prototype.getClassByName = function (name) {
+        MultiStorage.prototype.getClassByName = function (name) {
             var _class;
             if (this._setting[name]) {
                 switch (name) {
@@ -69,9 +66,6 @@ var Utils = require('./utils');
                     case 'userData':
                         _class = new UserData();
                         break;
-                    case 'flash':
-                        _class = new Flash();
-                        break;
                     case 'indexedDB':
                         _class = new IndexedDB();
                         break;
@@ -81,7 +75,7 @@ var Utils = require('./utils');
             }
             return _class;
         };
-        BrowerStorage.prototype._broadcast = function (func, data) {
+        MultiStorage.prototype._broadcast = function (func, data) {
             var resultStatus = false;
             for (var key in this._setting) {
                 var _class = this.getClassByName(key);
@@ -89,14 +83,14 @@ var Utils = require('./utils');
             }
             return resultStatus;
         };
-        BrowerStorage.prototype._broadcastGet = function (func, data) {
+        MultiStorage.prototype._broadcastGet = function (func, data) {
             var resultData;
             for (var key in this._setting) {
                 var _class = this.getClassByName(key);
                 data ? _class[func].call(this, data) : _class[func].call(this);
             }
         };
-        return BrowerStorage;
+        return MultiStorage;
     })();
     var Cookie = (function () {
         function Cookie(name, value, expires) {
@@ -260,12 +254,12 @@ var Utils = require('./utils');
     var IndexedDB = (function () {
         function IndexedDB(settings) {
             this._config = {
-                dbName: 'browerStorageDB',
-                tableName: 'browerStorage'
+                dbName: 'MultiStorageDB',
+                tableName: 'MultiStorage'
             };
             this._defaultSettings = {
-                dbName: 'browerStorageDB',
-                tableName: 'browerStorage'
+                dbName: 'MultiStorageDB',
+                tableName: 'MultiStorage'
             };
             this._settings = this._defaultSettings;
             if (settings) {
@@ -295,9 +289,44 @@ var Utils = require('./utils');
                 { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
             ];
             console.log('indexedDb set result:', result);
+            var request = self.indexedDB.open('test1');
+            request.onsuccess = function (event) {
+                var db = event.target.result;
+                console.log('in onsuccess:', db);
+                var transaction = db.transaction(["students"], "readwrite");
+                ;
+                var customerData = [
+                    { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                    { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+                ];
+                var store = transaction.objectStore('students');
+                console.log('in transaction omcomplete:', customerData);
+                for (var index = 0, length = customerData.length; index < length; index++) {
+                    console.log('customerData:', customerData, index);
+                    store.add(customerData[index]);
+                }
+                console.log('onsuccess in IndexedDB get:', db, transaction);
+            };
         };
         IndexedDB.prototype.get = function (name) {
             console.log('in IndexedDB get:', name);
+            var request = self.indexedDB.open('test1');
+            request.onsuccess = function (event) {
+                var db = event.target.result;
+                console.log('in onsuccess:', db);
+                var transaction = db.transaction(["students"], "readwrite");
+                ;
+                var customerData = [
+                    { ssn: "aa", name: "Bill", age: 35, email: "bill@company.com" },
+                    { ssn: "bb", name: "Donna", age: 32, email: "donna@home.org" }
+                ];
+                var store = transaction.objectStore('students');
+                var dataRequest = store.get('value');
+                dataRequest.onsuccess = function (event) {
+                    console.log('request result:', request.result);
+                };
+                console.log('onsuccess in IndexedDB get:', db, transaction);
+            };
         };
         IndexedDB.prototype.clear = function () {
             console.log('in IndexedDB clear:');
@@ -309,25 +338,6 @@ var Utils = require('./utils');
         return IndexedDB;
     })();
     ;
-    var Flash = (function () {
-        function Flash(setting) {
-            setting ? this._setting = setting : null;
-        }
-        Flash.prototype.set = function (name, value) {
-            console.log('in Flash set:', name, value);
-        };
-        Flash.prototype.get = function (name) {
-            console.log('in Flash get:', name);
-        };
-        Flash.prototype.clear = function () {
-            console.log('in Flash clear:');
-            root.localStorage.clear();
-        };
-        Flash.prototype.removeItem = function (name) {
-            console.log('in Flash removeItem:');
-        };
-        return Flash;
-    })();
-    root.BrowerStorage = BrowerStorage;
+    root.MultiStorage = MultiStorage;
 }());
 //# sourceMappingURL=multi-storage.js.map

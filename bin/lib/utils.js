@@ -1,6 +1,3 @@
-/**
- * utils for tiny-form
- */
 var MAX_SAFE_NUMBER = Math.pow(2, 53) - 1;
 var HOP = Object.prototype.hasOwnProperty;
 function each(object, iteratee) {
@@ -59,4 +56,26 @@ function upperFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 exports.upperFirstLetter = upperFirstLetter;
+function intersection(array) {
+    var result = [];
+    var argsLength = arguments.length;
+    for (var i = 0, length_3 = array.length; i < length_3; i++) {
+        var item = array[i];
+        if (result.indexOf(item) > -1) {
+            continue;
+        }
+        var j = void 0;
+        for (j = 1; j < argsLength; j++) {
+            if (!(arguments[j].indexOf(item) > -1)) {
+                break;
+            }
+        }
+        if (j === argsLength) {
+            result.push(item);
+        }
+    }
+    return result;
+}
+exports.intersection = intersection;
+;
 //# sourceMappingURL=utils.js.map
